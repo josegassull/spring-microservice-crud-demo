@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: crud-example-app
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true
+    database: postgresql
+    show-sql: true
+server:
+  port: 9001
+
