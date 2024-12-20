@@ -12,9 +12,7 @@ public interface CustomerService {
 
     CustomerResponseDto getCustomerById(UUID customerId);
 
-    List<CustomerEntity> getAllCustomers();
-
-    CustomerEntity updateCustomer(UUID customerId, CustomerEntity customerEntity);
+    CustomerResponseDto updateCustomer(UUID customerId, CustomerRequestDto customerRequestDto);
 
     void deleteCustomer(UUID customerId);
 }

@@ -22,4 +22,9 @@ public class CustomerController {
         CustomerResponseDto customerResponse = customerService.createCustomer(customerRequestDto);
         return new ResponseEntity<>(customerResponse, HttpStatus.CREATED);
     }
+
+    //Nota
+    public ResponseEntity<Void> deleteCustomer(){
+        return null;
+    }
 }

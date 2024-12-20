@@ -6,6 +6,7 @@ import com.crud_example.core.entity.CustomerEntity;
 import com.crud_example.core.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -56,18 +57,46 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerEntity> getAllCustomers() {
-        return null;
-    }
+    public CustomerResponseDto updateCustomer(UUID customerId, CustomerRequestDto customerRequestDto) {
 
-    @Override
-    public CustomerEntity updateCustomer(UUID customerId, CustomerEntity customerEntity) {
+        CustomerEntity customerEntity = customerRepository.findById(customerId)
+                .orElseThrow(() ->
+                        new RuntimeException(String.format("Customer not found with ID: %s"
+                                , customerId))
+                );
 
-        return null;
+        if (!ObjectUtils.isEmpty(customerRequestDto.getAge())) {
+
+            customerEntity.setAge(customerRequestDto.getAge());
+
+        }
+
+        if(!ObjectUtils.isEmpty(customerRequestDto.getName())){
+
+            customerEntity.setName(customerRequestDto.getName());
+
+        }
+
+        CustomerEntity savedCustomer = customerRepository.save(customerEntity);
+
+        return CustomerResponseDto
+                .builder()
+                .customerId(savedCustomer.getCustomerId())
+                .age(savedCustomer.getAge())
+                .name(savedCustomer.getName())
+                .build();
     }
 
     @Override
     public void deleteCustomer(UUID customerId) {
-    }
 
+        CustomerEntity customerEntity = customerRepository.findById(customerId)
+                .orElseThrow(() ->
+                        new RuntimeException(String.format("Customer not found with ID: %s"
+                                , customerId))
+                );
+
+        customerRepository.delete(customerEntity);
+
+    }
 }
