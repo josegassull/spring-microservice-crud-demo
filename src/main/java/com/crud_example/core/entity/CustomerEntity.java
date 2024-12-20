@@ -14,10 +14,10 @@ import java.util.UUID;
 @Builder
 @Getter
 @Setter
-public class Customer implements Serializable {
+public class CustomerEntity implements Serializable {
     @Id
     @GeneratedValue
     private UUID customerId;
     private String name;
-    private int age;
+    private Integer age;
 }
