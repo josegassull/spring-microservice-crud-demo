@@ -23,13 +23,22 @@ public class CustomerController {
     }
 
     @GetMapping("{customerId}")
-    public ResponseEntity<CustomerResponseDto> getCustomerById(@PathVariable UUID customerId){
+    public ResponseEntity<CustomerResponseDto> getCustomerById(@PathVariable UUID customerId) {
         CustomerResponseDto customerResponseDto = customerService.getCustomerById(customerId);
         return new ResponseEntity<>(customerResponseDto, HttpStatus.OK);
     }
 
-    //Nota
-    public ResponseEntity<Void> deleteCustomer(){
-        return null;
+    @PutMapping("{customerId}")
+    public ResponseEntity<CustomerResponseDto> updateCustomer(
+            @PathVariable UUID customerId,
+            @RequestBody CustomerRequestDto customerRequestDto) {
+        CustomerResponseDto updatedCustomer = customerService.updateCustomer(customerId, customerRequestDto);
+        return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
+    }
+
+    @DeleteMapping("{customerId}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable UUID customerId) {
+        customerService.deleteCustomer(customerId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
