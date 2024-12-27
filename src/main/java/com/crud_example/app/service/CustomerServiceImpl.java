@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service("customerService")
@@ -71,7 +70,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         }
 
-        if(!ObjectUtils.isEmpty(customerRequestDto.getName())){
+        if (!ObjectUtils.isEmpty(customerRequestDto.getName())) {
 
             customerEntity.setName(customerRequestDto.getName());
 

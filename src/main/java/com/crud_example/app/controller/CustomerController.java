@@ -28,11 +28,11 @@ public class CustomerController {
         return new ResponseEntity<>(customerResponseDto, HttpStatus.OK);
     }
 
-    @PutMapping("{customerId}")
+    @PutMapping()
     public ResponseEntity<CustomerResponseDto> updateCustomer(
-            @PathVariable UUID customerId,
             @RequestBody CustomerRequestDto customerRequestDto) {
-        CustomerResponseDto updatedCustomer = customerService.updateCustomer(customerId, customerRequestDto);
+        CustomerResponseDto updatedCustomer = customerService.updateCustomer(
+                customerRequestDto.getCustomerId() , customerRequestDto);
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
 
