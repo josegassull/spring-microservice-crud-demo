@@ -5,23 +5,21 @@ import com.crud_example.app.dto.response.CustomerResponseDto;
 import com.crud_example.core.entity.CustomerEntity;
 import com.crud_example.core.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Service("customerService")
 @RequiredArgsConstructor
-//@NoArgsConstructor
-//@AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
-    /*@Autowired
-    public CustomerServiceImpl(@Autowired CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }*/
-
-    //Injection using Lombok
     private final CustomerRepository customerRepository;
 
     @Override
@@ -97,5 +95,19 @@ public class CustomerServiceImpl implements CustomerService {
 
         customerRepository.delete(customerEntity);
 
+    }
+
+    @Override
+    public Page<CustomerResponseDto> getAllCustomers(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<CustomerEntity> customerPage = customerRepository.findAll(pageable);
+
+        return customerPage.map(customer -> CustomerResponseDto.builder()
+                .customerId(customer.getCustomerId())
+                .age(customer.getAge())
+                .name(customer.getName())
+                .build());
     }
 }

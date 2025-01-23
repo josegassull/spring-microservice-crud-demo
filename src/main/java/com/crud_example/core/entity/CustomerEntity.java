@@ -19,9 +19,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CustomerEntity implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Type(type="uuid-char")
+    @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Type(type = "uuid-char")
     private UUID customerId;
     private String name;
     private Integer age;
