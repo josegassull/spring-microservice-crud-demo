@@ -6,8 +6,8 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -25,4 +25,6 @@ public class CustomerEntity implements Serializable {
     private UUID customerId;
     private String name;
     private Integer age;
+    @OneToOne
+    private NationalIdEntity nationalIdEntity;
 }

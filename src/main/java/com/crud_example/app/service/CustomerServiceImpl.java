@@ -98,9 +98,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Page<CustomerResponseDto> getAllCustomers(int page, int size) {
-
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<CustomerResponseDto> getAllCustomers(Pageable pageable) {
 
         Page<CustomerEntity> customerPage = customerRepository.findAll(pageable);
 
