@@ -1,7 +1,6 @@
 package com.crud_example.app.dto.request;
 
 import lombok.Data;
-
 import java.util.UUID;
 
 @Data

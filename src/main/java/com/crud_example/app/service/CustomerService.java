@@ -4,8 +4,6 @@ import com.crud_example.app.dto.request.CustomerRequestDto;
 import com.crud_example.app.dto.response.CustomerResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 import java.util.UUID;
 
 public interface CustomerService {
