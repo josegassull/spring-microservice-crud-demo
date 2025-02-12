@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/nationalId")
 @RequiredArgsConstructor
@@ -21,4 +23,22 @@ public class NationalIdController {
         return new ResponseEntity<>(nationalIdResponseDto, HttpStatus.CREATED);
     }
 
+    @GetMapping("{nationalIdId}")
+    public ResponseEntity<NationalIdResponseDto> getNationalIdById(@PathVariable UUID nationalIdId){
+        NationalIdResponseDto nationalIdResponseDto = nationalIdService.getNationalId(nationalIdId);
+        return new ResponseEntity<>(nationalIdResponseDto, HttpStatus.OK);
+    }
+
+    @PutMapping
+    public ResponseEntity<NationalIdResponseDto> updateNationalId(@RequestBody NationalIdRequestDto nationalIdRequestDto){
+        NationalIdResponseDto nationalIdResponseDto = nationalIdService.updateNationalId
+                (nationalIdRequestDto.getNationalIdId(), nationalIdRequestDto);
+        return new ResponseEntity<>(nationalIdResponseDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("{nationalIdId}")
+    public ResponseEntity<Void> deleteNationalId(@PathVariable UUID nationalIdId){
+        nationalIdService.deleteNationalId(nationalIdId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

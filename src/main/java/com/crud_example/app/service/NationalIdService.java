@@ -11,7 +11,7 @@ public interface NationalIdService {
 
     NationalIdResponseDto getNationalId(UUID nationalIdId);
 
-    NationalIdResponseDto updateNationalId(NationalIdRequestDto nationalIdRequestDto);
+    NationalIdResponseDto updateNationalId(UUID nationalIdId, NationalIdRequestDto nationalIdRequestDto);
 
     void deleteNationalId(UUID idKey);
 

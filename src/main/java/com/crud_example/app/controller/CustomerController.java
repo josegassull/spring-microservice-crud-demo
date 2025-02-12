@@ -21,8 +21,7 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<CustomerResponseDto> createCustomer(@RequestBody CustomerRequestDto customerRequestDto) {
         CustomerResponseDto customerResponseDto = customerService.createCustomer(customerRequestDto);
-        throw new RuntimeException("Mensaje de pureba");
-        //return new ResponseEntity<>(customerResponseDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(customerResponseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("{customerId}")
@@ -32,8 +31,7 @@ public class CustomerController {
     }
 
     @PutMapping()
-    public ResponseEntity<CustomerResponseDto> updateCustomer(
-            @RequestBody CustomerRequestDto customerRequestDto) {
+    public ResponseEntity<CustomerResponseDto> updateCustomer(@RequestBody CustomerRequestDto customerRequestDto) {
         CustomerResponseDto updatedCustomer = customerService.updateCustomer(
                 customerRequestDto.getCustomerId() , customerRequestDto);
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
