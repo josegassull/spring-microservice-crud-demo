@@ -2,19 +2,17 @@ package com.crud_example.app.service;
 
 import com.crud_example.app.dto.request.NationalIdRequestDto;
 import com.crud_example.app.dto.response.NationalIdResponseDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.UUID;
 
 public interface NationalIdService {
 
     NationalIdResponseDto createNationalId(NationalIdRequestDto nationalIdRequestDto);
 
-    NationalIdResponseDto getNationalId(Long idNumber);
+    NationalIdResponseDto getNationalId(UUID nationalIdId);
 
-    NationalIdResponseDto updateNationalId(Long idNumber, NationalIdRequestDto nationalIdRequestDto);
+    NationalIdResponseDto updateNationalId(NationalIdRequestDto nationalIdRequestDto);
 
-    void deleteNationalId(Long idNumber);
-
-    Page<NationalIdResponseDto> getAllNationalIds(Pageable pageable);
+    void deleteNationalId(UUID idKey);
 
 }

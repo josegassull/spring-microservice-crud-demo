@@ -21,7 +21,8 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<CustomerResponseDto> createCustomer(@RequestBody CustomerRequestDto customerRequestDto) {
         CustomerResponseDto customerResponseDto = customerService.createCustomer(customerRequestDto);
-        return new ResponseEntity<>(customerResponseDto, HttpStatus.CREATED);
+        throw new RuntimeException("Mensaje de pureba");
+        //return new ResponseEntity<>(customerResponseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("{customerId}")
