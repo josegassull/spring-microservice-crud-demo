@@ -16,6 +16,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "national_id")
 public class NationalIdEntity implements Serializable {
 
     @Id
@@ -27,8 +28,9 @@ public class NationalIdEntity implements Serializable {
     private IdentificationType identificationType;
     private LocalDate issuanceDate;
     private LocalDate expirationDate;
+    private String country;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
     private CustomerEntity customer;
 }

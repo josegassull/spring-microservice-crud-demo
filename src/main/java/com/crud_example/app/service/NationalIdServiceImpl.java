@@ -1,16 +1,21 @@
 package com.crud_example.app.service;
 
+import com.crud_example.app.dto.error.CustomException;
 import com.crud_example.app.dto.request.NationalIdRequestDto;
 import com.crud_example.app.dto.response.NationalIdResponseDto;
+import com.crud_example.core.entity.CustomerEntity;
 import com.crud_example.core.entity.NationalIdEntity;
 import com.crud_example.core.repository.CustomerRepository;
 import com.crud_example.core.repository.NationalIdRepository;
 import com.crud_example.core.utils.CustomerUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service("nationalIdService")
 @RequiredArgsConstructor
@@ -23,26 +28,25 @@ public class NationalIdServiceImpl implements NationalIdService {
     public NationalIdResponseDto createNationalId(NationalIdRequestDto nationalIdRequestDto) {
 
         boolean existsCustomer = customerRepository.existsById(nationalIdRequestDto.getCustomerId());
+
         if(!existsCustomer){
-            throw new IllegalArgumentException("ERROR: Invalid customer ID, please try again.");
+            throw new CustomException("Entity not found", HttpStatus.NOT_FOUND, String.format("ERROR: Customer with ID %s not found.", nationalIdRequestDto.getCustomerId()));
         }
 
-        //TODO 2: Si no valida, y lanza la excepción: ¿También va a cortar esta línea de flujo?
         CustomerUtils.validateIdentificationType(nationalIdRequestDto.getIdentificationType());
 
-        //TODO 1: Duda, hay una diferencia entre NationalIdEntity y sus DTOs, y es que NationalIdEntity tiene un
-        //atributo del tipo CusotmerEntity, y los DTOs, en cambio, tienen un UUID customerId ¿Qué hacer?
+        validateExistsNationalId(nationalIdRequestDto);
+
         NationalIdEntity nationalIdEntity = NationalIdEntity.builder()
-                .nationalIdId(nationalIdRequestDto.getNationalIdId())
                 .idNumber(nationalIdRequestDto.getIdNumber())
                 .issuanceDate(nationalIdRequestDto.getIssuanceDate())
                 .expirationDate(nationalIdRequestDto.getExpirationDate())
                 .identificationType(nationalIdRequestDto.getIdentificationType())
+                .customer(CustomerEntity.builder().customerId(nationalIdRequestDto.getCustomerId()).build())
                 .build();
 
         NationalIdEntity savedNationalIdEntity = nationalIdRepository.save(nationalIdEntity);
 
-        //TODO 1: Por ejemplo, aca, al buildear la respuesta, devolvemos el uuid, pero no una entidad de Customer
         return NationalIdResponseDto
                 .builder()
                 .nationalIdId(savedNationalIdEntity.getNationalIdId())
@@ -50,8 +54,38 @@ public class NationalIdServiceImpl implements NationalIdService {
                 .issuanceDate(savedNationalIdEntity.getIssuanceDate())
                 .expirationDate(savedNationalIdEntity.getExpirationDate())
                 .identificationType(savedNationalIdEntity.getIdentificationType())
-                .customerId(nationalIdRequestDto.getCustomerId())
+                .customerId(savedNationalIdEntity.getCustomer().getCustomerId())
                 .build();
+    }
+
+    private void validateExistsNationalId(NationalIdRequestDto nationalIdRequestDto) {
+        validateDuplicatedNationalId(nationalIdRequestDto);
+        validateSecondNationalId(nationalIdRequestDto);
+    }
+
+    private void validateDuplicatedNationalId(NationalIdRequestDto nationalIdRequestDto) {
+        boolean existsNationalId = nationalIdRepository.existsByIdNumberAndIdentificationTypeAndCountry
+                (nationalIdRequestDto.getIdNumber(),
+                nationalIdRequestDto.getIdentificationType(), nationalIdRequestDto.getCountry());
+
+        if(existsNationalId){
+            throw new RuntimeException(String.format("ERROR: National ID %s already exists"
+                    , nationalIdRequestDto.getIdNumber()));
+        }
+    }
+
+    private void validateSecondNationalId(NationalIdRequestDto nationalIdRequestDto){
+        boolean existsSecondNationalId = nationalIdRepository
+                .existsByIdentificationTypeAndCountryAndCustomer_CustomerId(nationalIdRequestDto.getIdentificationType(),
+                        nationalIdRequestDto.getCountry(),
+                        nationalIdRequestDto.getCustomerId());
+
+        if(existsSecondNationalId){
+            throw new RuntimeException(String.format
+                    ("ERROR: National ID type %s for country %s and customer %s already exists"
+                    , nationalIdRequestDto.getIdentificationType(), nationalIdRequestDto.getCountry()
+                    , nationalIdRequestDto.getCustomerId()));
+        }
     }
 
     @Override
@@ -77,10 +111,9 @@ public class NationalIdServiceImpl implements NationalIdService {
 
         boolean existsCustomer = customerRepository.existsById(nationalIdRequestDto.getCustomerId());
         if(!existsCustomer){
-            throw new IllegalArgumentException("ERROR: Invalid customer ID, please try again.");
+            throw new IllegalArgumentException(String.format("ERROR: Invalid customer ID %s, please try again."
+                    , nationalIdRequestDto.getCustomerId()));
         }
-
-        CustomerUtils.validateIdentificationType(nationalIdRequestDto.getIdentificationType());
 
         NationalIdEntity nationalIdEntity = nationalIdRepository.findById(nationalIdId)
                 .orElseThrow(() ->
@@ -104,7 +137,6 @@ public class NationalIdServiceImpl implements NationalIdService {
         }
 
         if(!ObjectUtils.isEmpty(nationalIdRequestDto.getIdentificationType())){
-            //TODO 2: Si no valida, y lanza la excepción: ¿También va a cortar esta línea de flujo?
             CustomerUtils.validateIdentificationType(nationalIdRequestDto.getIdentificationType());
             nationalIdEntity.setIdentificationType(nationalIdRequestDto.getIdentificationType());
         }
@@ -132,5 +164,22 @@ public class NationalIdServiceImpl implements NationalIdService {
         nationalIdRepository.delete(nationalIdEntity);
     }
 
-    //todo 3: hacer el getAllNationalIds pero de un Cliente, no todos los de la base de datos. Sin paginado.
+    @Override
+    public Set<NationalIdResponseDto> getAllNationalIdsByCustomerId(UUID customerId) {
+
+        if (!customerRepository.existsById(customerId)) {
+            throw new IllegalArgumentException(String.format("ERROR: Customer with ID %s not found.", customerId));
+        }
+
+        Set<NationalIdEntity> nationalIdEntities = nationalIdRepository.findAllByCustomerCustomerId(customerId);
+
+        return nationalIdEntities.stream().map(nationalIdEntity -> NationalIdResponseDto.builder()
+                .nationalIdId(nationalIdEntity.getNationalIdId())
+                .idNumber(nationalIdEntity.getIdNumber())
+                .issuanceDate(nationalIdEntity.getIssuanceDate())
+                .expirationDate(nationalIdEntity.getExpirationDate())
+                .identificationType(nationalIdEntity.getIdentificationType())
+                .customerId(nationalIdEntity.getCustomer().getCustomerId())
+                .build()).collect(Collectors.toSet());
+    }
 }

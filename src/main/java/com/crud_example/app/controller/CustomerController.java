@@ -2,6 +2,7 @@ package com.crud_example.app.controller;
 
 import com.crud_example.app.dto.request.CustomerRequestDto;
 import com.crud_example.app.dto.response.CustomerResponseDto;
+import com.crud_example.app.dto.response.NationalIdResponseDto;
 import com.crud_example.app.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @RestController

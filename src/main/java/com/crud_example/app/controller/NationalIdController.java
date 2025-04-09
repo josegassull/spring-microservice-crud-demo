@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -40,5 +41,11 @@ public class NationalIdController {
     public ResponseEntity<Void> deleteNationalId(@PathVariable UUID nationalIdId){
         nationalIdService.deleteNationalId(nationalIdId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/list/{customerId}")
+    public ResponseEntity<Set<NationalIdResponseDto>> getAllNationalIdsByCustomer(@PathVariable UUID customerId) {
+        Set<NationalIdResponseDto> nationalIds = nationalIdService.getAllNationalIdsByCustomerId(customerId);
+        return new ResponseEntity<>(nationalIds, HttpStatus.OK);
     }
 }
