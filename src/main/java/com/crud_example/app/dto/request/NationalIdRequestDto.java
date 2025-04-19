@@ -14,28 +14,29 @@ import java.util.UUID;
 public class NationalIdRequestDto {
     private UUID nationalIdId;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "ID number must not be null")
+    @Positive(message = "ID number must be positive")
     private Long idNumber;
 
-    @NotNull
+    @NotNull(message = "ID type must not be null")
     private IdentificationType identificationType;
 
     private LocalDate issuanceDate;
     private LocalDate expirationDate;
 
-    @NotNull
+    @NotNull(message = "Customer's ID must not be null")
     private UUID customerId;
 
-    @NotBlank
+    @NotBlank(message = "Country must not be blank")
     @Size.List({
-            @Size(min = 3),
-            @Size(max = 3)
+            @Size(min = 3, message = "Country must have exactly three characters"),
+            @Size(max = 3, message = "Country must have exactly three characters")
     })
     private String country;
 }
 
 /*
+https://www.baeldung.com/java-validation
 @NotNull
 @NotEmpty
 @Size

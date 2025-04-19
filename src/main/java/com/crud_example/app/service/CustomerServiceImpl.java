@@ -1,5 +1,6 @@
 package com.crud_example.app.service;
 
+import com.crud_example.app.dto.error.CustomException;
 import com.crud_example.app.dto.request.CustomerRequestDto;
 import com.crud_example.app.dto.response.CustomerResponseDto;
 import com.crud_example.core.entity.CustomerEntity;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -42,7 +44,11 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponseDto getCustomerById(UUID customerId) {
         CustomerEntity customerEntity = customerRepository.findById(customerId)
                 .orElseThrow(() ->
-                        new RuntimeException(String.format("Customer not found with ID: %s", customerId))
+                        new CustomException(
+                                String.format("Customer not found with ID: %s", customerId),
+                                HttpStatus.NOT_FOUND,
+                                "The customer you're trying to retrieve does not exist"
+                        )
                 );
 
         return CustomerResponseDto
@@ -58,8 +64,11 @@ public class CustomerServiceImpl implements CustomerService {
 
         CustomerEntity customerEntity = customerRepository.findById(customerId)
                 .orElseThrow(() ->
-                        new RuntimeException(String.format("Customer not found with ID: %s"
-                                , customerId))
+                        new CustomException(
+                                String.format("Customer not found with ID: %s", customerId),
+                                HttpStatus.NOT_FOUND,
+                                "The customer you're trying to update does not exist"
+                        )
                 );
 
         if (!ObjectUtils.isEmpty(customerRequestDto.getAge())) {
@@ -89,8 +98,11 @@ public class CustomerServiceImpl implements CustomerService {
 
         CustomerEntity customerEntity = customerRepository.findById(customerId)
                 .orElseThrow(() ->
-                        new RuntimeException(String.format("Customer not found with ID: %s"
-                                , customerId))
+                        new CustomException(
+                                String.format("Customer not found with ID: %s", customerId),
+                                HttpStatus.NOT_FOUND,
+                                "The customer you're trying to delete does not exist"
+                        )
                 );
 
         customerRepository.delete(customerEntity);

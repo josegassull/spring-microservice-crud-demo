@@ -69,8 +69,11 @@ public class NationalIdServiceImpl implements NationalIdService {
                 nationalIdRequestDto.getIdentificationType(), nationalIdRequestDto.getCountry());
 
         if(existsNationalId){
-            throw new RuntimeException(String.format("ERROR: National ID %s already exists"
-                    , nationalIdRequestDto.getIdNumber()));
+            throw new CustomException(
+                    String.format("National ID %s already exists", nationalIdRequestDto.getIdNumber()),
+                    HttpStatus.NOT_FOUND,
+                    "The identification you're trying to create already exist"
+            );
         }
     }
 
@@ -81,10 +84,18 @@ public class NationalIdServiceImpl implements NationalIdService {
                         nationalIdRequestDto.getCustomerId());
 
         if(existsSecondNationalId){
-            throw new RuntimeException(String.format
+            /*throw new RuntimeException(String.format
                     ("ERROR: National ID type %s for country %s and customer %s already exists"
                     , nationalIdRequestDto.getIdentificationType(), nationalIdRequestDto.getCountry()
-                    , nationalIdRequestDto.getCustomerId()));
+                    , nationalIdRequestDto.getCustomerId()));*/
+            throw new CustomException(
+                    String.format("National ID type %s for country %s and customer %s already exists"
+                            , nationalIdRequestDto.getIdentificationType(), nationalIdRequestDto.getCountry()
+                            , nationalIdRequestDto.getCustomerId()),
+                    HttpStatus.NOT_FOUND,
+                    "The identification type you are trying to create already exists for the specified customer and" +
+                            "country"
+            );
         }
     }
 
@@ -92,7 +103,11 @@ public class NationalIdServiceImpl implements NationalIdService {
     public NationalIdResponseDto getNationalId(UUID nationalIdId) {
         NationalIdEntity nationalIdEntity = nationalIdRepository.findById(nationalIdId)
                 .orElseThrow(() ->
-                        new RuntimeException(String.format("Identification not found with ID: %s", nationalIdId))
+                        new CustomException(
+                                String.format("Identification not found with ID: %s", nationalIdId),
+                                HttpStatus.NOT_FOUND,
+                                "The identification you're trying to retrieve does not exist"
+                        )
                 );
 
         return NationalIdResponseDto
@@ -111,14 +126,20 @@ public class NationalIdServiceImpl implements NationalIdService {
 
         boolean existsCustomer = customerRepository.existsById(nationalIdRequestDto.getCustomerId());
         if(!existsCustomer){
-            throw new IllegalArgumentException(String.format("ERROR: Invalid customer ID %s, please try again."
-                    , nationalIdRequestDto.getCustomerId()));
+            throw new CustomException(
+                    String.format("Customer not found with ID: %s", nationalIdRequestDto.getCustomerId()),
+                    HttpStatus.NOT_FOUND,
+                    "The customer you're trying to access does not exist"
+            );
         }
 
         NationalIdEntity nationalIdEntity = nationalIdRepository.findById(nationalIdId)
                 .orElseThrow(() ->
-                        new RuntimeException(String.format("Identification not found with ID: %s"
-                                , nationalIdId))
+                        new CustomException(
+                                String.format("Identification not found with ID: %s", nationalIdRequestDto.getCustomerId()),
+                                HttpStatus.NOT_FOUND,
+                                "The identification you're trying to update does not exist"
+                        )
                 );
 
         if(!ObjectUtils.isEmpty(nationalIdRequestDto.getIdNumber())){
@@ -157,8 +178,12 @@ public class NationalIdServiceImpl implements NationalIdService {
     public void deleteNationalId(UUID nationalIdId) {
         NationalIdEntity nationalIdEntity = nationalIdRepository.findById(nationalIdId)
                 .orElseThrow(() ->
-                        new RuntimeException(String.format("Identification not found with ID: %s"
-                                , nationalIdId))
+                        new CustomException(
+                                String.format("Identification not found with ID: %s", nationalIdId),
+                                HttpStatus.NOT_FOUND,
+                                "The identification you're trying to delete does not exist"
+                        )
+
                 );
 
         nationalIdRepository.delete(nationalIdEntity);
@@ -168,7 +193,11 @@ public class NationalIdServiceImpl implements NationalIdService {
     public Set<NationalIdResponseDto> getAllNationalIdsByCustomerId(UUID customerId) {
 
         if (!customerRepository.existsById(customerId)) {
-            throw new IllegalArgumentException(String.format("ERROR: Customer with ID %s not found.", customerId));
+            throw new CustomException(
+                    String.format("Customer with ID %s not found", customerId),
+                    HttpStatus.NOT_FOUND,
+                    "The customer you are trying to retrieve does not exist"
+            );
         }
 
         Set<NationalIdEntity> nationalIdEntities = nationalIdRepository.findAllByCustomerCustomerId(customerId);
